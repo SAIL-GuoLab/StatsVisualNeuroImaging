@@ -5,6 +5,7 @@ This function performs two-sample t-test on two cohorts (cohort A > cohort B) an
 Specifically, this is written for special cases where the input cohorts are very large (e.g., > 1000 scans in total).
 We use special means to reduce memory consumption.
 Copyright: Nanyan "Rosalie" Zhu & Chen "Raphael" Liu
+Aug, 2020.
 """
 #%%import packages
 import numpy as np
