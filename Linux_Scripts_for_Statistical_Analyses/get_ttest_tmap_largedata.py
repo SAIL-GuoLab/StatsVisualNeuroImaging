@@ -1,7 +1,7 @@
 #!/home/raphael/anaconda3/envs/HumanCBV/bin/python3.7
 # -*- coding: utf-8 -*-
 """
-This is a function to get two cohort ttest tmap (cohort A > cohort B). 
+This function performs two-sample t-test on two cohorts (cohort A > cohort B) and generates the t-score map.
 Specifically, this is written for special cases where the input cohorts are very large (e.g., > 1000 scans in total).
 We use special means to reduce memory consumption.
 Copyright: Nanyan "Rosalie" Zhu & Chen "Raphael" Liu
