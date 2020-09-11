@@ -3,7 +3,7 @@
 """
 This function is to convert brain extracted scans to brain mask scans.
 Now it only works for '.nii.gz' scans.
-Copyright: Nanyan "Rosalie" Zhu & Chen "Raphael" Liu
+Authors: Nanyan "Rosalie" Zhu and Chen "Raphael" Liu
 
 """
 import nibabel as nib 
