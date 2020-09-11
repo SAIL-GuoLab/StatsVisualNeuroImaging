@@ -4,7 +4,7 @@
 """
 This script pads or crops a MRI scan to a given dimension. The original matrix will be centered in the specified new dimension. New voxels will be zero padded.
 
-Nanyan "Rosalie" Zhu
+Authors: Nanyan "Rosalie" Zhu and Chen "Raphael" Liu
 """
 import sys
 import argparse
