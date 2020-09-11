@@ -13,7 +13,7 @@ Specifically, we approach this in the following manner.
 
 Note: since there is a normalization step, the relative scaling among subjects will be affected.
 
-Chen "Raphael" Liu and Nanyan "Rosalie" Zhu
+Authors: Chen "Raphael" Liu and Nanyan "Rosalie" Zhu
 """
 
 import sys
