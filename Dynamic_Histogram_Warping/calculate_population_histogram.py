@@ -13,7 +13,7 @@ Specifically, we approach this in the following manner.
 
 Note: since there is a normalization step, the relative scaling among subjects will be affected.
 
-Authors: Chen "Raphael" Liu and Nanyan "Rosalie" Zhu
+Chen "Raphael" Liu and Nanyan "Rosalie" Zhu
 """
 
 import sys
@@ -35,7 +35,7 @@ def main(argv):
 
     opt_group = parser.add_argument_group("Optional arguments")
     #opt_group.add_argument("-dec", "--num_decimals", help = "the number of decimal places to round the input and reference scans to", default = 2)
-    opt_group.add_argument("-bins", "--bins", help = "the number of bins for the histogram of the input and reference scans", default = 512)
+    opt_group.add_argument("-bins", "--bins", help = "the number of bins for the histogram of the input and reference scans", default = 1024)
 
     args = parser.parse_args()
 
@@ -49,13 +49,13 @@ def main(argv):
         input_scan = np.float64(nib.load(input_paths[scan_index]).get_fdata())
         input_mask = np.int16(nib.load(input_mask_paths[scan_index]).get_fdata())
         normalization_factor = np.mean(input_scan[np.logical_and(input_scan >= np.percentile(input_scan[input_mask == 1], 90, interpolation = 'nearest'), input_mask == 1)])
-        input_scan_normalized = input_scan / normalization_factor * 100.0
+        input_scan_normalized = input_scan / normalization_factor * 256.0
 
         ## Round the scan, in order to reduce the amount of computation
         #input_scan_normalized = np.round(input_scan_normalized, args.num_decimals)
 
         # Compute the histograms.
-        histogram_and_bin_edges = plt.hist(input_scan_normalized[input_mask == 1], bins = args.bins, range = [0, 255.0])
+        histogram_and_bin_edges = plt.hist(input_scan_normalized[input_mask == 1], bins = args.bins, range = [0, 1024.0], density = True)
         current_histogram = histogram_and_bin_edges[0]
         bin_edges = histogram_and_bin_edges[1]
 
@@ -65,6 +65,7 @@ def main(argv):
             input_cumulative_histogram = input_cumulative_histogram + current_histogram
 
     input_mean_histogram = input_cumulative_histogram * args.bins / input_cumulative_histogram.sum()
+
     print('Done calculating the population mean histogram for the input cohort.')
     os.makedirs(args.output_dir, exist_ok = True)
     np.save(args.output_dir + 'mean_histogram.npy', input_mean_histogram)

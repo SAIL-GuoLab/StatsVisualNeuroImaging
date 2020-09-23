@@ -13,7 +13,7 @@ Specifically, we approach this in the following manner.
 
 Note: since there is a normalization step, the relative scaling among subjects will be affected.
 
-Authors: Chen "Raphael" Liu and Nanyan "Rosalie" Zhu
+Chen "Raphael" Liu and Nanyan "Rosalie" Zhu
 """
 
 import sys
@@ -32,24 +32,24 @@ def main(argv):
     req_group = parser.add_argument_group("Required arguments")
     req_group.add_argument("-i", "--input_dir", help = "input population folder (please end with '/')", required = True)
     req_group.add_argument("-mi", "--input_mask_dir", help = "mask file folder corresponding to the input (please end with '/')", required = True)
-    req_group.add_argument("-ih", "--input_histogran_dir", help = "input population histogram directory with file name end with .npy", required = True)
-    req_group.add_argument("-ref", "--reference_dir", help = "reference population folder (please end with '/')", required = True)
+    req_group.add_argument("-ih", "--input_histogram_dir", help = "input population histogram directory with file name end with .npy", required = True)
+    req_group.add_argument("-rh", "--reference_histogram_dir", help = "reference histogram folder (please end with '/')", required = True)
     req_group.add_argument("-o", "--output_dir", help = "output file folder (please end with '/')", required = True)
  
     opt_group = parser.add_argument_group("Optional arguments")
-    opt_group.add_argument("-dec", "--num_decimals", help = "the number of decimal places to round the input and reference scans to", default = 2)
-    opt_group.add_argument("-bins", "--bins", help = "the number of bins for the histogram of the input and reference scans", default = 512)
+    #opt_group.add_argument("-dec", "--num_decimals", help = "the number of decimal places to round the input and reference scans to", default = 2)
+    opt_group.add_argument("-bins", "--bins", help = "the number of bins for the histogram of the input and reference scans", default = 1024)
     opt_group.add_argument("-debug", "--debug", help = "whether or not to print the warping intensity pairs", default = 0)
 
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok = True)
     # load input and target population histogram
-    input_mean_histogram = np.load(args.input_histogran_dir + 'mean_histogram.npy')
-    bin_edges = np.load(args.input_histogran_dir + 'bin_edges.npy')
+    input_mean_histogram = np.load(args.input_histogram_dir + 'mean_histogram.npy')
+    bin_edges = np.load(args.input_histogram_dir + 'bin_edges.npy')
     print('Done loading the population mean histogram for the input cohort.')
 
-    reference_mean_histogram = np.load(args.reference_dir + 'mean_histogram.npy')
+    reference_mean_histogram = np.load(args.reference_histogram_dir + 'mean_histogram.npy')
     print('Done loading the population mean histogram for the reference cohort.')
 
     # glob input scans
@@ -73,10 +73,10 @@ def main(argv):
         else:
             input_mask = np.int16(nib.load(input_mask_paths[scan_index]).get_fdata())
             normalization_factor = np.mean(input_scan[np.logical_and(input_scan >= np.percentile(input_scan[input_mask == 1], 90, interpolation = 'nearest'), input_mask == 1)])
-            input_scan_normalized = input_scan / normalization_factor * 100.0
+            input_scan_normalized = input_scan / normalization_factor * 256.0
 
             # Round the scan, in order to reduce the amount of computation
-            input_scan_normalized = np.round(input_scan_normalized, args.num_decimals)
+            #input_scan_normalized = np.round(input_scan_normalized, args.num_decimals)
 
             # Use DHW to generate a matched scan.
             matched_scan = np.zeros(input_scan.shape)
@@ -88,7 +88,7 @@ def main(argv):
                 if str(args.debug) == '1':
                     print(input_intensity_lower_bound, input_intensity_upper_bound, matched_voxel_intensity)
                 matched_scan[np.logical_and(input_scan_normalized >= input_intensity_lower_bound, input_mask == 1)] = matched_voxel_intensity
-            matched_scan = np.round(matched_scan, args.num_decimals)
+            #matched_scan = np.round(matched_scan, args.num_decimals)
 
             # Extract the header and affine from one file.
             input_scan_nii = nib.load(input_paths[scan_index])
